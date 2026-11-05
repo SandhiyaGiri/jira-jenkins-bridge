@@ -51,6 +51,27 @@ credentials:
               secret: "${JIRA_API_TOKEN}"
 
 jobs:
+  # Polling alternative: Jenkins asks Jira every minute (no inbound tunnel/webhook needed).
+  - script: >
+      pipelineJob('jira-poller') {
+        description('Polls Jira for label run-automation, claims tickets, triggers automation-run.')
+        triggers { cron('* * * * *') }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('${TESTS_REPO_URL}')
+                  credentials('github-pat')
+                }
+                branch('*/main')
+              }
+            }
+            scriptPath('Jenkinsfile.poll')
+            lightweight(false)
+          }
+        }
+      }
   - script: >
       pipelineJob('automation-run') {
         description('Runs tagged Cucumber/Playwright tests; reports to Jira. Triggered by webhook bridge.')
