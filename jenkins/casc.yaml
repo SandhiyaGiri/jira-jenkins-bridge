@@ -24,6 +24,10 @@ jenkins:
               - "Job/Read"
               - "Job/Build"
 
+unclassified:
+  location:
+    url: "http://localhost:8080/"   # makes BUILD_URL non-empty
+
 credentials:
   system:
     domainCredentials:
@@ -56,6 +60,7 @@ jobs:
           choiceParam('TENANT', ['DEMO'], 'Tenant')
           stringParam('RETRY', '1', 'Retry count 0-2')
           stringParam('JIRA_KEY', '', 'Jira issue to update')
+          booleanParam('FORCE_FAIL', false, 'Demo only: force a failing assertion')
         }
         definition {
           cpsScm {
