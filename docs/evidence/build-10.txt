@@ -1,0 +1,10 @@
+Started by user admin
++ npm test -- --tags @TODO-FILTER --retry 1
+1 scenario (1 failed)
+6 steps (1 failed, 3 skipped, 2 passed)
+summary: FAILED total=1 passed=0 failed=1 skipped=0
++ node scripts/jira-notify.mjs
+jira-notify: attachment ok
+jira-notify: label ok
+jira-notify: build link ok
+Finished: FAILURE

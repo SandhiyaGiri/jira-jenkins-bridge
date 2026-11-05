@@ -1,0 +1,8 @@
+Started by upstream project "jira-poller" build number 2
+ Started by timer
++ npm test -- --tags @TODO-COMPLETE --retry 1
+1 scenario (1 passed)
+7 steps (7 passed)
+summary: PASSED total=1 passed=1 failed=0 skipped=0
++ node scripts/jira-notify.mjs
+Finished: SUCCESS
