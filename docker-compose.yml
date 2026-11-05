@@ -18,5 +18,19 @@ services:
       - jenkins_home:/var/jenkins_home
       - ./jenkins/casc.yaml:/casc/casc.yaml:ro
 
+  webhook:
+    build:
+      context: .
+      dockerfile: webhook/Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"   # local testing; tunnel will reach it over the compose network
+    environment:
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:?set in .env}
+      JENKINS_URL: http://jenkins:8080
+      JENKINS_USER: webhook
+      JENKINS_PASSWORD: ${JENKINS_WEBHOOK_PASSWORD:?set in .env}
+    depends_on:
+      - jenkins
+
 volumes:
   jenkins_home:
