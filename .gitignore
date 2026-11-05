@@ -1,0 +1,8 @@
+.env
+*.pyc
+__pycache__/
+.pytest_cache/
+.venv/
+
+# corporate TLS-inspection root CA (local only, never commit)
+jenkins/certs/*.crt

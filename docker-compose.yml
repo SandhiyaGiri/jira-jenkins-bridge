@@ -1,0 +1,22 @@
+services:
+  jenkins:
+    build: ./jenkins
+    ports:
+      - "127.0.0.1:8080:8080"   # localhost only; never published via tunnel
+    environment:
+      CASC_JENKINS_CONFIG: /casc/casc.yaml
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+      # Explicit list (not env_file): Jenkins must not see WEBHOOK_SECRET.
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?set in .env}
+      JENKINS_WEBHOOK_PASSWORD: ${JENKINS_WEBHOOK_PASSWORD:?set in .env}
+      GITHUB_PAT: ${GITHUB_PAT:?set in .env}
+      TESTS_REPO_URL: ${TESTS_REPO_URL:?set in .env}
+      JIRA_BASE_URL: ${JIRA_BASE_URL:?set in .env}
+      JIRA_EMAIL: ${JIRA_EMAIL:?set in .env}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN:?set in .env}
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./jenkins/casc.yaml:/casc/casc.yaml:ro
+
+volumes:
+  jenkins_home:

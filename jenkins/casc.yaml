@@ -1,0 +1,75 @@
+jenkins:
+  systemMessage: "Local Jira -> Jenkins POC (personal, free)"
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+        # Least privilege: webhook service can only read + build.
+        - id: "webhook"
+          password: "${JENKINS_WEBHOOK_PASSWORD}"
+  authorizationStrategy:
+    projectMatrix:
+      entries:
+        - user:
+            name: "admin"
+            permissions:
+              - "Overall/Administer"
+        - user:
+            name: "webhook"
+            permissions:
+              - "Overall/Read"
+              - "Job/Read"
+              - "Job/Build"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github-pat"
+              username: "SandhiyaGiri"
+              password: "${GITHUB_PAT}"
+          - string:
+              scope: GLOBAL
+              id: "jira-base-url"
+              secret: "${JIRA_BASE_URL}"
+          - string:
+              scope: GLOBAL
+              id: "jira-email"
+              secret: "${JIRA_EMAIL}"
+          - string:
+              scope: GLOBAL
+              id: "jira-api-token"
+              secret: "${JIRA_API_TOKEN}"
+
+jobs:
+  - script: >
+      pipelineJob('automation-run') {
+        description('Runs tagged Cucumber/Playwright tests; reports to Jira. Triggered by webhook bridge.')
+        parameters {
+          stringParam('TAGS', '@Regression', 'Cucumber tag expression')
+          choiceParam('ENV', ['QA'], 'Environment')
+          choiceParam('TENANT', ['DEMO'], 'Tenant')
+          stringParam('RETRY', '1', 'Retry count 0-2')
+          stringParam('JIRA_KEY', '', 'Jira issue to update')
+        }
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('${TESTS_REPO_URL}')
+                  credentials('github-pat')
+                }
+                branch('*/main')
+              }
+            }
+            scriptPath('Jenkinsfile')
+            lightweight(false)
+          }
+        }
+      }
